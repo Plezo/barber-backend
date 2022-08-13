@@ -3,18 +3,6 @@ const router = express.Router();
 
 const Appointment = require('../models/Appointment.js');
 
-// move this to frontend when possible
-function isValidEmail(email) {
-    const re = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
-    return re.test(email);
-}
-
-// move this to frontend when possible
-function isValidPhone(phone) {
-    const re = new RegExp('\d{10}');
-    return re.test(phone);
-}
-
 /*
 
 Fetch all appointments on the selected date (selection will be frontend)
@@ -79,34 +67,12 @@ function createWorkHours(selected_day, hours=[9, 18]) {
     return workHours;
 }
 
-router.get('/', async (req, res) => {
-    try {
-        const appointments = await Appointment.find();
-        res.json(appointments);
-    } catch (err) {
-        res.json({ message: err });
-    }
-});
-
 router.post('/', async (req, res) => {
-    // move this to frontend when possible
-    if (!isValidEmail(req.body.client_email) && req.body.client_email != null) {
-        res.json({ message: "Email not valid!" })
-        return;
-    }
-
-    // move this to frontend when possible
-    // needs fixing
-    // if (!isValidPhone(req.body.client_phone)) {
-    //     res.json({ message: "Phone number not valid!" });
-    //     return;
-    // }
 
     const appointment = new Appointment({
         id: req.body.id,
         client_name: req.body.client_name,
         client_phone_number: req.body.client_phone_number,
-        client_email: req.body.client_email,
         start_time: req.body.start_time,
         end_time_expected: req.body.end_time_expected,
         cancelled: req.body.cancelled
@@ -114,9 +80,20 @@ router.post('/', async (req, res) => {
 
     try {
         const savedAppointment = await appointment.save();
-        res.json(savedAppointment);
+        res.json({ success: true, savedAppointment });
     } catch (err) {
         res.json({ message: err });
+    }
+
+});
+
+// WILL NOT BE IN PROD!
+router.get('/', async (req, res) => {
+    try {
+        const appointments = await Appointment.find();
+        res.json(appointments);
+    } catch (err) {
+        res.json({ success: false, message: err });
     }
 });
 

@@ -13,10 +13,6 @@ const AppointmentSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    client_email: {
-        type: String,
-        required: false
-    },
     start_time: {
         type: Date,
         required: true
